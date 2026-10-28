@@ -1,1 +1,356 @@
-fds
+{
+  "env": "dev",
+  "account": "970547336770",
+  "region": "us-east-1",
+  "app_prefix": "novos-ar",
+  "permissions_boundary": "arn:aws:iam::970547336770:policy/PRDRAR65AWSIAMPERMBOUNDARYV1ID01",
+  "stack_prefix": "APP01-NVSGISRDRAR65",
+  "policy_prefix": "PRDRAR65DEVAWSAPP01",
+  "account_role_prefix": "RRDRAR65DEV_AWS_APP01-",
+  "kms_key_arn": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+  "kms_key_arn_dra66": "arn:aws:kms:us-east-1:484907503679:key/45cdf371-1dfd-407a-8881-143d482f6135",
+  "dra66_dataset_write_role_arn": "arn:aws:iam::484907503679:role/RRDRAR66DEV_AWS_APP01-novos-central-datasetwrite",
+  "dra66_featurestore_read_role_arn": "arn:aws:iam::484907503679:role/RRDRAR66DEV_AWS_APP01-novos-central-featurestoreread",
+  "roles": {
+    "appadm_role": "RIDY_AWS_RDRAR65_APPADMV1",
+    "dpadmin_role": "RRDRAR65DEV_AWS_APP01-novos-DataAdmin_Role-dev",
+    "cdk_deploy_role": "RRDRAR65_AWS_APP01-cdk-hnb659fds-deploy-role-us-east-1",
+    "cdk_cfn_exec_role": "RRDRAR65_AWS_APP01-cdk-hnb659fds-cfn-exec-role-us-east-1",
+    "cdk_lookup_role": "RRDRAR65_AWS_APP01-cdk-hnb659fds-lookup-role-us-east-1",
+    "cdk_file_asset_publishing_role": "RRDRAR65_AWS_APP01-cdk-hnb659fds-file-publishing-role-us-east-1",
+    "cdk_image_asset_publishing_role": "RRDRAR65_AWS_APP01-cdk-hnb659fds-image-role-us-east-1"
+  },
+  "network": {
+    "vpc_id": "vpc-04bfa3877f7fb8dc4",
+    "subnet_groups": {
+      "routable": [
+        "subnet-029c9670e249449c0",
+        "subnet-0bf01ffd53d9b4511"
+      ],
+      "non-routable": [
+        "subnet-0bbb5a883e86e8281",
+        "subnet-0fe03a21879959148"
+      ]
+    },
+    "security_groups": {
+      "neptune": [
+        "sg-0321ff56c731d5138"
+      ],
+      "lambda": [
+        "sg-0fff0e9160460002d",
+        "sg-058e35b74a696bc80",
+        "sg-0edb0104034149a34"
+      ]
+    }
+  },
+  "ecr_repo_name": "f1ai/applications/pwsa0002037",
+  "s3_buckets": {
+    "bucket_names": [
+      "datasets",
+      "test-bucket",
+      "wl-report-store",
+      "feature-ingestion",
+      "offline-store",
+      "cohort-label",
+      "mrd-datasets",
+      "model-training"
+    ]
+  },
+  "secret_manager": [
+    "collate",
+    "centree",
+    "sharepoint-details"
+  ],
+  "jenkins": {
+    "external_id": "12345",
+    "user_id": "app_t1_88899_uc0022",
+    "assume_role_name": "RIDY_AWS_RDRAR65_APPADMV1",
+    "ridy_identity_acc_role_name": "RIDY_AWS_RDRAR65_APPADM"
+  },
+  "notifications": {
+    "sns_topics": [
+      {
+        "name": "ds-alert",
+        "display_name": "DS Alert Notifications"
+      }
+    ],
+    "sqs_queues": []
+  },
+  "lambdas": {
+    "neptune_check": {
+      "description": "Neptune health check - dummy test",
+      "timeout": 10,
+      "memory": 256,
+      "subnet_group": "routable",
+      "role": "{account_role_prefix}{app_prefix}-lambda-execution",
+      "env_vars": {
+        "APP_PREFIX": "{app_prefix}",
+        "ENV": "{env}"
+      }
+    },
+    "feature-intake-compiler": {
+      "description": "Feature ingestion stage 1 - compiles a feature intake form into the compiled intake",
+      "base_image_tag": "novos-ar-base-cpu",
+      "timeout": 2,
+      "memory": 512,
+      "subnet_group": "routable",
+      "role": "{account_role_prefix}{app_prefix}-lambda-feature-ingestion",
+      "env_vars": {
+        "ENV": "{env}",
+        "APP_PREFIX": "{app_prefix}",
+        "ACCOUNT_ID": "970547336770",
+        "COMPILED_INTAKE_BUCKET": "novartis-970547336770-{env}-us-east-1-{app_prefix}-feature-ingestion",
+        "CONFIG_BUCKET": "novartis-970547336770-{env}-us-east-1-{app_prefix}-config",
+        "OFFLINE_STORE_S3_URI": "s3://novartis-970547336770-{env}-us-east-1-{app_prefix}-offline-store",
+        "KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+        "FEATURE_STORE_INGEST_ROLE_ARN": "arn:aws:iam::970547336770:role/RRDRAR65DEV_AWS_APP01-{app_prefix}-workload-FeatureStore-IngestRole",
+        "ECR_REPO_NAME": "f1ai/applications/pwsa0002037",
+        "FEATURE_INGESTION_IMAGE_TAG": "novos-ar-job-feature-ingestion",
+        "AR_DATAZONE_DOMAIN_ID": "dzd-c3poc7rfn8nyw7",
+        "AR_DATAZONE_PROJECT_ID": "do9axtshgp150n",
+        "TAG_CLARITY_ID": "96354",
+        "TAG_DATA_PRODUCT_NAME": "NOVOS",
+        "TAG_DATA_PRODUCT_ID": "novos",
+        "TAG_ENVIRONMENT": "{env}",
+        "TAG_COMPONENT": "{app_prefix}-platform",
+        "TAG_BU": "Novartis-Pharma"
+      }
+    },
+    "feature-group-creater": {
+      "description": "Feature ingestion stage 2 - creates the feature group from the compiled intake",
+      "base_image_tag": "novos-ar-base-cpu",
+      "timeout": 10,
+      "memory": 512,
+      "subnet_group": "routable",
+      "role": "{account_role_prefix}{app_prefix}-lambda-feature-ingestion",
+      "env_vars": {
+        "ENV": "{env}",
+        "ACCOUNT_ID": "970547336770"
+      }
+    },
+    "cohort-validation": {
+      "description": "Cohort-label stage 1 - compiles a cohort-label intake form into the compiled intake",
+      "base_image_tag": "novos-ar-base-cpu",
+      "timeout": 2,
+      "memory": 1024,
+      "subnet_group": "routable",
+      "role": "{account_role_prefix}{app_prefix}-lambda-cohort-label",
+      "env_vars": {
+        "ENV": "{env}",
+        "APP_PREFIX": "{app_prefix}",
+        "ACCOUNT_ID": "{account}",
+        "COHORT_LABEL_BUCKET": "novartis-{account}-{env}-{region}-{app_prefix}-cohort-label",
+        "CONFIG_BUCKET": "novartis-{account}-{env}-{region}-{app_prefix}-config",
+        "KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+        "COHORT_LABEL_EXECUTION_ROLE_ARN": "arn:aws:iam::{account}:role/{account_role_prefix}{app_prefix}-CohortLabelExecution",
+        "ECR_REPO_NAME": "f1ai/applications/pwsa0002037",
+        "COHORT_LABEL_IMAGE_TAG": "novos-ar-job-cohort-label",
+        "TAG_CLARITY_ID": "96354",
+        "TAG_DATA_PRODUCT_NAME": "NOVOS",
+        "TAG_DATA_PRODUCT_ID": "novos",
+        "TAG_ENVIRONMENT": "{env}",
+        "TAG_COMPONENT": "{app_prefix}-platform",
+        "TAG_BU": "Novartis-Pharma"
+      }
+    },
+    "mrd-validation": {
+      "description": "Model-ready-dataset stage 1 - compiles an MRD intake form into the compiled intake the three Processing stages read",
+      "base_image_tag": "novos-ar-base-cpu",
+      "timeout": 2,
+      "memory": 1024,
+      "subnet_group": "routable",
+      "role": "{account_role_prefix}{app_prefix}-lambda-mrd",
+      "env_vars": {
+        "ENV": "{env}",
+        "APP_PREFIX": "{app_prefix}",
+        "ACCOUNT_ID": "{account}",
+        "MODEL_READY_DATASET_BUCKET": "novartis-{account}-{env}-{region}-{app_prefix}-mrd-datasets",
+        "CONFIG_BUCKET": "novartis-{account}-{env}-{region}-{app_prefix}-config",
+        "KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+        "COHORT_LABEL_EXECUTION_ROLE_ARN": "arn:aws:iam::{account}:role/{account_role_prefix}{app_prefix}-CohortLabelExecution",
+        "ECR_REPO_NAME": "f1ai/applications/pwsa0002037",
+        "MODEL_READY_DATASET_IMAGE_TAG": "novos-ar-job-model-ready-dataset",
+        "DS_ALERT_TOPIC_ARN": "arn:aws:sns:{region}:{account}:{app_prefix}-ds-alert-{env}",
+        "TAG_CLARITY_ID": "96354",
+        "TAG_DATA_PRODUCT_NAME": "NOVOS",
+        "TAG_DATA_PRODUCT_ID": "novos",
+        "TAG_ENVIRONMENT": "{env}",
+        "TAG_COMPONENT": "{app_prefix}-platform",
+        "TAG_BU": "Novartis-Pharma"
+      }
+    },
+    "model-training-pipeline-validate": {
+      "description": "Model training SF State 1 (Validate) - structurally + business validate the training config",
+      "base_image_tag": "novos-ar-job-training",
+      "timeout": 5,
+      "memory": 512,
+      "subnet_group": "routable",
+      "env_vars": {
+        "ENV": "{env}",
+        "APP_PREFIX": "{app_prefix}",
+        "ACCOUNT_ID": "970547336770",
+        "AR_ARTIFACT_BUCKET": "{ssm:/{app_prefix}/{env}/s3/model-training-bucket-name}",
+        "AR_DATASET_PREFIX": "03-cohort-label/datasets",
+        "AR_EXECUTION_ROLE_ARN": "arn:aws:iam::{account}:role/{account_role_prefix}{app_prefix}-workload-pipelineexecution",
+        "AR_KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+        "AR_DATAZONE_DOMAIN_ID": "dzd-c3poc7rfn8nyw7",
+        "AR_DATAZONE_PROJECT_ID": "do9axtshgp150n",
+        "AR_VPC_SECURITY_GROUP_IDS": "sg-0fff0e9160460002d,sg-058e35b74a696bc80,sg-0edb0104034149a34",
+        "AR_VPC_SUBNET_IDS": "subnet-0537c8dda74f4723b,subnet-0811c3073b6ae7f26"
+      }
+    },
+    "model-training-pipeline-launch": {
+      "description": "Model training SF State 2 (Build & Launch) - build the pipeline, tag the group, upsert, start",
+      "base_image_tag": "novos-ar-job-training",
+      "timeout": 10,
+      "memory": 1024,
+      "subnet_group": "routable",
+      "env_vars": {
+        "ENV": "{env}",
+        "APP_PREFIX": "{app_prefix}",
+        "ACCOUNT_ID": "970547336770",
+        "AR_ARTIFACT_BUCKET": "{ssm:/{app_prefix}/{env}/s3/model-training-bucket-name}",
+        "AR_DATASET_PREFIX": "03-cohort-label/datasets",
+        "AR_EXECUTION_ROLE_ARN": "arn:aws:iam::{account}:role/{account_role_prefix}{app_prefix}-workload-pipelineexecution",
+        "AR_KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+        "AR_DATAZONE_DOMAIN_ID": "dzd-c3poc7rfn8nyw7",
+        "AR_DATAZONE_PROJECT_ID": "do9axtshgp150n",
+        "AR_VPC_SECURITY_GROUP_IDS": "sg-0fff0e9160460002d,sg-058e35b74a696bc80,sg-0edb0104034149a34",
+        "AR_VPC_SUBNET_IDS": "subnet-0537c8dda74f4723b,subnet-0811c3073b6ae7f26"
+      }
+    }
+  },
+  "snowflake": {
+    "env_vars": {
+      "SNOWFLAKE_ACCOUNT": "nvs2deveast1.us-east-1.privatelink",
+      "SNOWFLAKE_HOST": "nvs2deveast1.us-east-1.privatelink.snowflakecomputing.com",
+      "SNOWFLAKE_WAREHOUSE": "COM_US_IMDNA_AWB_WH_S",
+      "SNOWFLAKE_WAREHOUSE_PATTERN": "COM_US_IMDNA_AWB_WH_{size}",
+      "SNOWFLAKE_DATABASE": "COM_US_IMDNA_ADL",
+      "SNOWFLAKE_SCHEMA": "AWB_PWSA0002037_NOVAOS",
+      "SNOWFLAKE_ROLE": "F1_IMU_IM_DEV_AWB_PWSA0002037_NOVAOS_ENGINEER",
+      "SNOWFLAKE_USER_SECRET_ID": "arn:aws:secretsmanager:us-east-1:970547336770:secret:f1ai-pwsa0002037-Gza0Cv",
+      "SNOWFLAKE_PRIVATE_KEY_SECRET_ID": "f1ai-pwsa0002037-key",
+      "HTTP_PROXY": "http://proxy-usvn.aws.novartis.net:3128",
+      "HTTPS_PROXY": "http://proxy-usvn.aws.novartis.net:3128",
+      "http_proxy": "http://proxy-usvn.aws.novartis.net:3128",
+      "https_proxy": "http://proxy-usvn.aws.novartis.net:3128",
+      "NO_PROXY": "privatelink.snowflakecomputing.com,amazonaws.com,169.254.169.254",
+      "no_proxy": "privatelink.snowflakecomputing.com,amazonaws.com,169.254.169.254"
+    }
+  },
+  "tags": {
+    "ClarityID": "96354",
+    "DataProductName": "NOVOS",
+    "DataProductId": "novos",
+    "Environment": "dev",
+    "Component": "{app_prefix}-platform",
+    "BU": "Novartis-Pharma"
+  },
+  "state_machines": {
+    "feature_onboarding": {
+      "name": "feature-onboarding",
+      "description": "NovaOS AR feature onboarding - compile the intake, create the feature group, wait for Created, document the features, then transform and ingest",
+      "role": "{account_role_prefix}{app_prefix}-statemachine-feature-onboarding",
+      "compiler_lambda": "feature-intake-compiler",
+      "creater_lambda": "feature-group-creater",
+      "wait_seconds": 30,
+      "timeout_minutes": 1440,
+      "log_retention": "ONE_MONTH",
+      "ingest": {
+        "volume_size_gb": 100,
+        "max_runtime_seconds": 86400,
+        "subnet_group": "routable",
+        "security_group": "lambda",
+        "env_vars": {
+          "ENV": "{env}",
+          "ACCOUNT_ID": "970547336770",
+          "AWS_REGION": "us-east-1",
+          "KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d"
+        }
+      }
+    },
+    "cohort_label": {
+      "name": "cohort-label",
+      "description": "NovaOS AR cohort and label engineering - compile the cohort-label intake, then read Gold and run the population + label job",
+      "role": "{account_role_prefix}{app_prefix}-CohortLabelStateMachine",
+      "validator_lambda": "cohort-validation",
+      "wait_seconds": 30,
+      "timeout_minutes": 1440,
+      "log_retention": "ONE_MONTH",
+      "population_label": {
+        "volume_size_gb": 100,
+        "max_runtime_seconds": 86400,
+        "subnet_group": "routable",
+        "security_group": "lambda",
+        "env_vars": {
+          "ENV": "{env}",
+          "ACCOUNT_ID": "{account}",
+          "AWS_REGION": "{region}",
+          "KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d"
+        }
+      }
+    },
+    "model_ready_dataset": {
+      "name": "model-ready-dataset",
+      "description": "NovaOS AR model-ready dataset - compile the MRD intake, then point-in-time join, split, and validate before writing the versioned dataset",
+      "role": "{account_role_prefix}{app_prefix}-ModelReadyDatasetStateMachine",
+      "validator_lambda": "mrd-validation",
+      "wait_seconds": 30,
+      "timeout_minutes": 1440,
+      "log_retention": "ONE_MONTH",
+      "pit_join": {
+        "volume_size_gb": 100,
+        "max_runtime_seconds": 86400,
+        "subnet_group": "routable",
+        "security_group": "lambda",
+        "env_vars": {
+          "ENV": "{env}",
+          "ACCOUNT_ID": "{account}",
+          "AWS_REGION": "{region}",
+          "KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+          "ATHENA_OUTPUT_S3_URI": "s3://novartis-{account}-{env}-{region}-{app_prefix}-mrd-datasets/athena-results/"
+        }
+      },
+      "split": {
+        "volume_size_gb": 100,
+        "max_runtime_seconds": 86400,
+        "subnet_group": "routable",
+        "security_group": "lambda",
+        "env_vars": {
+          "ENV": "{env}",
+          "ACCOUNT_ID": "{account}",
+          "AWS_REGION": "{region}",
+          "KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+          "ATHENA_OUTPUT_S3_URI": "s3://novartis-{account}-{env}-{region}-{app_prefix}-mrd-datasets/athena-results/"
+        }
+      },
+      "validate": {
+        "volume_size_gb": 100,
+        "max_runtime_seconds": 86400,
+        "subnet_group": "routable",
+        "security_group": "lambda",
+        "env_vars": {
+          "ENV": "{env}",
+          "ACCOUNT_ID": "{account}",
+          "AWS_REGION": "{region}",
+          "KMS_KEY_ARN": "arn:aws:kms:us-east-1:970547336770:key/292ebeae-849c-45e4-848a-f49513f07e8d",
+          "ATHENA_OUTPUT_S3_URI": "s3://novartis-{account}-{env}-{region}-{app_prefix}-mrd-datasets/athena-results/"
+        }
+      }
+    },
+    "model_training": {
+      "name": "model-training",
+      "validate_lambda": "model-training-pipeline-validate",
+      "launch_lambda": "model-training-pipeline-launch",
+      "role": "{account_role_prefix}{app_prefix}-statemachine-model-training",
+      "wait_seconds": 60,
+      "log_level": "ALL",
+      "include_execution_data": true,
+      "log_retention": "ONE_MONTH",
+      "log_retention_days": 30,
+      "timeout_hours": 24,
+      "tracing_enabled": false
+    }
+  }
+}
