@@ -1,0 +1,52 @@
+{
+  "vpc-provider:account=970547336770:filter.vpc-id=vpc-04bfa3877f7fb8dc4:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-04bfa3877f7fb8dc4",
+    "vpcCidrBlock": "10.182.11.0/24",
+    "ownerAccountId": "970547336770",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-0537c8dda74f4723b",
+            "cidr": "10.182.11.0/25",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-098a43d3b761781ab"
+          },
+          {
+            "subnetId": "subnet-0fe03a21879959148",
+            "cidr": "100.116.35.0/25",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-098a43d3b761781ab"
+          },
+          {
+            "subnetId": "subnet-0811c3073b6ae7f26",
+            "cidr": "10.182.11.128/25",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-099979a5d859a8d50"
+          },
+          {
+            "subnetId": "subnet-0bbb5a883e86e8281",
+            "cidr": "100.116.35.128/25",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-099979a5d859a8d50"            
+          }
+        ]
+      }
+    ]
+  },
+  "security-group:account=970547336770:region=us-east-1:securityGroupName=LinuxSG:vpcId=vpc-04bfa3877f7fb8dc4": {
+    "securityGroupId": "sg-058e35b74a696bc80",
+    "allowAllOutbound": false
+  },
+  "security-group:account=970547336770:region=us-east-1:securityGroupName=DefaultSG:vpcId=vpc-04bfa3877f7fb8dc4": {
+    "securityGroupId": "sg-0fff0e9160460002d",
+    "allowAllOutbound": false
+  },
+  "security-group:account=970547336770:region=us-east-1:securityGroupName=WebServerSG:vpcId=vpc-04bfa3877f7fb8dc4": {
+    "securityGroupId": "sg-0edb0104034149a34",
+    "allowAllOutbound": false
+  }
+}
