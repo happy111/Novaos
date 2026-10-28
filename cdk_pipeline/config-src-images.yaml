@@ -1,0 +1,70 @@
+# ============================================================
+# Image Build Configuration — NOVOS AR (src/images only)
+# ============================================================
+# All images build FROM base-cpu. Build order: base-cpu first,
+# then all job/base images in parallel (same layer).
+# ============================================================
+
+images:
+  - name: base-cpu
+    dir: src/images/base-cpu
+    dockerfile: src/images/base-cpu/Dockerfile
+    fixed_tag: novos-ar-base-cpu
+    tag_var: BASE_CPU_IMAGE_TAG
+    build_args: []
+
+  - name: base-snowflake-processing
+    dir: src/images/base-snowflake-processing
+    dockerfile: src/images/base-snowflake-processing/Dockerfile
+    fixed_tag: novos-ar-base-snowflake-processing
+    tag_var: BASE_SNOWFLAKE_PROCESSING_IMAGE_TAG
+    build_args:
+      - BASE_CPU_IMAGE
+
+  - name: base-training-gpu
+    dir: src/images/base-training-gpu
+    dockerfile: src/images/base-training-gpu/Dockerfile
+    fixed_tag: novos-ar-base-training-gpu
+    tag_var: BASE_TRAINING_GPU_IMAGE_TAG
+    build_args:
+      - BASE_CPU_IMAGE
+
+  - name: job-feature-ingestion
+    dir: src/images/job-feature-ingestion
+    dockerfile: src/images/job-feature-ingestion/Dockerfile
+    fixed_tag: novos-ar-job-feature-ingestion
+    tag_var: JOB_FEATURE_INGESTION_IMAGE_TAG
+    build_args:
+      - BASE_CPU_IMAGE
+
+  - name: job-cohort-label
+    dir: src/images/job-cohort-label
+    dockerfile: src/images/job-cohort-label/Dockerfile
+    fixed_tag: novos-ar-job-cohort-label
+    tag_var: JOB_COHORT_LABEL_IMAGE_TAG
+    build_args:
+      - BASE_CPU_IMAGE
+
+  - name: job-model-ready-dataset
+    dir: src/images/job-model-ready-dataset
+    dockerfile: src/images/job-model-ready-dataset/Dockerfile
+    fixed_tag: novos-ar-job-model-ready-dataset
+    tag_var: JOB_MODEL_READY_DATASET_IMAGE_TAG
+    build_args:
+      - BASE_CPU_IMAGE
+
+  - name: job-training
+    dir: src/images/job-training
+    dockerfile: src/images/job-training/Dockerfile
+    fixed_tag: novos-ar-job-training
+    tag_var: JOB_TRAINING_IMAGE_TAG
+    build_args:
+      - BASE_CPU_IMAGE
+
+  - name: job-monitoring
+    dir: src/images/job-monitoring
+    dockerfile: src/images/job-monitoring/Dockerfile
+    fixed_tag: novos-ar-job-monitoring
+    tag_var: JOB_MONITORING_IMAGE_TAG
+    build_args:
+      - BASE_CPU_IMAGE
