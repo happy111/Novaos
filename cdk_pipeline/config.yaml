@@ -1,0 +1,121 @@
+# ============================================================
+# Image Build Configuration — NOVOS AR
+# ============================================================
+# Single source of truth for all Docker images built by this pipeline.
+# Scripts (build-image.sh, push-image.sh, wiz.sh) read this file via yq.
+#
+# Fields:
+#   name           - CLI argument to build-image.sh / push-image.sh
+#   dir            - Source directory (change detection scope)
+#   dockerfile     - Dockerfile path relative to repo root
+#   tag_prefix     - Prefix for the image tag
+#   tag_var        - Env var name that holds the computed tag
+#   alias_tag_var  - (optional) Env var for a secondary "latest" style tag
+#   alias_tag_value- (optional) Value prefix for the alias tag
+#   build_args     - (optional) List of env var names passed as --build-arg
+#   platform       - (optional) e.g. linux/amd64
+# ============================================================
+
+images:
+  # - name: sagemaker
+  #   dir: sagemaker
+  #   dockerfile: sagemaker/Docker
+  #   tag_prefix: sagemaker
+  #   tag_var: SAGEMAKER_IMAGE_TAG
+  #   alias_tag_var: SAGEMAKER_LATEST_TAG
+  #   alias_tag_value: sagemaker-latest
+  #   build_args: []
+
+  - name: neptune_check
+    dir: src/lambda/neptune-check
+    dockerfile: src/lambda/neptune-check/Dockerfile
+    tag_prefix: ar-neptune-check
+    tag_var: NEPTUNE_HC_IMAGE_TAG
+    build_args: []
+
+  # ── Feature ingestion state machine ────────────────────────────────
+  # `name` must match the key in the lambdas block of environments/<env>.json:
+  # cdk_lambdas.py looks the tag_var up by that key, and names the function
+  # {app_prefix}-{name}-{environment}. Change detection is scoped to `dir`, so a
+  # change under src/common does NOT rebuild these — use FORCE_BUILD for that.
+  - name: feature-intake-compiler
+    dir: src/lambda/feature-intake-compiler
+    dockerfile: src/lambda/feature-intake-compiler/Dockerfile
+    tag_prefix: ar-feature-intake-compiler
+    tag_var: FEATURE_INTAKE_COMPILER_IMAGE_TAG
+    alias_tag_var: FEATURE_INTAKE_COMPILER_LATEST_TAG
+    alias_tag_value: ar-feature-intake-compiler-latest
+    platform: linux/amd64
+    build_args:
+      - BASE_IMAGE
+
+  - name: feature-group-creater
+    dir: src/lambda/feature-group-creater
+    dockerfile: src/lambda/feature-group-creater/Dockerfile
+    tag_prefix: ar-feature-group-creater
+    tag_var: FEATURE_GROUP_CREATER_IMAGE_TAG
+    alias_tag_var: FEATURE_GROUP_CREATER_LATEST_TAG
+    alias_tag_value: ar-feature-group-creater-latest
+    platform: linux/amd64
+    build_args:
+      - BASE_IMAGE
+
+  # ── Cohort-label state machine ─────────────────────────────────────
+  - name: cohort-validation
+    dir: src/lambda/cohort-validation
+    dockerfile: src/lambda/cohort-validation/Dockerfile
+    tag_prefix: ar-cohort-validation
+    tag_var: COHORT_VALIDATION_IMAGE_TAG
+    alias_tag_var: COHORT_VALIDATION_LATEST_TAG
+    alias_tag_value: ar-cohort-validation-latest
+    platform: linux/amd64
+    build_args:
+      - BASE_IMAGE
+  # ── Model-ready-dataset state machine ──────────────────────────────
+  # Stage 1 only. The three Processing stages share one job image, registered in
+  # config-src-images.yaml as job-model-ready-dataset — not here.
+  - name: mrd-validation
+    dir: src/lambda/mrd-validation
+    dockerfile: src/lambda/mrd-validation/Dockerfile
+    tag_prefix: ar-mrd-validation
+    tag_var: MRD_VALIDATION_IMAGE_TAG
+    alias_tag_var: MRD_VALIDATION_LATEST_TAG
+    alias_tag_value: ar-mrd-validation-latest
+    platform: linux/amd64
+    build_args:
+      - BASE_IMAGE
+
+  # ── Model-training state machine ───────────────────────────────────
+  # SF State 1 (Validate) + State 2 (Build & Launch). Both build FROM base-cpu
+  # (which carries the sagemaker v3 SDK) via BASE_IMAGE; base_image_tag is set in
+  # lambdas.<name> of environments/<env>.json.
+  - name: model-training-pipeline-validate
+    dir: src/lambda/model-training-pipeline-validate
+    dockerfile: src/lambda/model-training-pipeline-validate/Dockerfile
+    tag_prefix: ar-model-training-pipeline-validate
+    tag_var: MODEL_TRAINING_PIPELINE_VALIDATE_IMAGE_TAG
+    alias_tag_var: MODEL_TRAINING_PIPELINE_VALIDATE_LATEST_TAG
+    alias_tag_value: ar-model-training-pipeline-validate-latest
+    platform: linux/amd64
+    build_args:
+      - BASE_IMAGE
+
+  - name: model-training-pipeline-launch
+    dir: src/lambda/model-training-pipeline-launch
+    dockerfile: src/lambda/model-training-pipeline-launch/Dockerfile
+    tag_prefix: ar-model-training-pipeline-launch
+    tag_var: MODEL_TRAINING_PIPELINE_LAUNCH_IMAGE_TAG
+    alias_tag_var: MODEL_TRAINING_PIPELINE_LAUNCH_LATEST_TAG
+    alias_tag_value: ar-model-training-pipeline-launch-latest
+    platform: linux/amd64
+    build_args:
+      - BASE_IMAGE
+
+  # - name: sl-collate-healthcheck
+  #   dir: src/lambda/sl-collate-healthcheck
+  #   dockerfile: src/lambda/sl-collate-healthcheck/Dockerfile
+  #   tag_prefix: sl-collate-healthcheck
+  #   tag_var: COLLATE_HC_IMAGE_TAG
+  #   alias_tag_var: COLLATE_HC_LATEST_TAG
+  #   alias_tag_value: sl-collate-healthcheck-latest
+  #   build_args: []
