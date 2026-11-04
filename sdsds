@@ -1,0 +1,20 @@
+{
+  "python.terminal.activateEnvironment": false,
+  "python.defaultInterpreterPath": "/opt/conda/bin/python",
+  "http.proxy": null,
+  "http.proxyAuthorization": null,
+  "claudeCode.environmentVariables": [
+    {
+      "name": "CLAUDE_CODE_USE_BEDROCK",
+      "value": "1"
+    },
+    {
+      "name": "AWS_REGION",
+      "value": "us-east-1"
+    },
+    {
+      "name": "ANTHROPIC_MODEL",
+      "value": "arn:aws:bedrock:us-east-1:970547336770:application-inference-profile/..."
+    }
+  ]
+}
