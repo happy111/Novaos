@@ -1,0 +1,19 @@
+# What the runbook scripts import, and nothing else — `setup_venv.sh` installs this
+# into a venv so the four runbooks run on a machine that is not a SageMaker
+# notebook. Deliberately not the repo's test or CDK dependencies: a runbook never
+# needs either, and a smaller set is a smaller install to get wrong.
+#
+# `docker` and `jq` are also required by build_and_push.sh and cannot be pip
+# installed; setup_venv.sh reports them instead.
+
+# Every run_pipeline.sh and upload_intake.sh shells out to `aws`, which a machine
+# outside SageMaker generally does not have.
+awscli>=1.32,<2.0
+boto3>=1.34,<2.0
+pandas>=2.0,<3.0
+PyYAML>=6.0,<7.0
+# query_store.py reads the offline store's Parquet through pandas.
+pyarrow>=14.0,<25.0
+# model-training/validate_config.py runs the platform's own config validation, whose
+# structural tier is a JSON Schema check.
+jsonschema>=4.0,<5.0
